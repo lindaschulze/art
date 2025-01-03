@@ -4,36 +4,41 @@ let rectangles;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noLoop();
-  setInterval(changeRectangles, 1800000); // Change every 30 minutes
+  setInterval(changeRectangles, 600000); // Change every 10 minutes
   changeRectangles();
 }
 
 function changeRectangles() {
+  // Mondrian-inspired colors
   colors = [
-    color(random(255), random(255), random(255)),
-    color(random(255), random(255), random(255)),
-    color(random(255), random(255), random(255))
+    color(255, 0, 0), // Red
+    color(255, 255, 0), // Yellow
+    color(0, 0, 255), // Blue
+    color(255, 255, 255), // White
+    color(0, 0, 0) // Black for outlines
   ];
 
-  while (colors[0] === colors[1] || colors[1] === colors[2] || colors[0] === colors[2]) {
-    colors[1] = color(random(255), random(255), random(255));
-    colors[2] = color(random(255), random(255), random(255));
+  rectangles = [];
+  
+  // Create random rectangles
+  let numRects = int(random(4, 10)); // Number of rectangles
+  for (let i = 0; i < numRects; i++) {
+    let rectColor = colors[int(random(4))]; // Random color from the palette
+    let x = random(width);
+    let y = random(height);
+    let w = random(width * 0.1, width * 0.4); // Random width
+    let h = random(height * 0.1, height * 0.4); // Random height
+    rectangles.push({ x, y, w, h, rectColor });
   }
-
-  rectangles = [
-    random(0.2, 0.5),
-    random(0.2, 0.5),
-    1.0
-  ];
   redraw();
 }
 
 function draw() {
   background(255);
-  let y = 0;
-  for (let i = 0; i < 3; i++) {
-    fill(colors[i]);
-    rect(0, y, width, height * rectangles[i]);
-    y += height * rectangles[i];
+  for (let rect of rectangles) {
+    fill(rect.rectColor);
+    stroke(0); // Black outlines
+    strokeWeight(5); // Thick lines for Mondrian style
+    rect(rect.x, rect.y, rect.w, rect.h);
   }
 }
