@@ -22,12 +22,12 @@ function generateArt() {
     // Array to hold rectangles
     const rectangles = [initialRectangle];
 
-    // Split rectangles until we have a sufficient number
+    // Split rectangles until we have a sufficient number (5-20 rectangles)
     const minRectangles = 5;
     const maxRectangles = 20;
     const targetRectangles = Math.floor(Math.random() * (maxRectangles - minRectangles + 1)) + minRectangles;
 
-    while (rectangles.length < targetRectangles) {
+    while (rectangles.length < targetRectangles && rectangles.length < 20) {
         // Choose a rectangle to split
         const rectIndex = Math.floor(Math.random() * rectangles.length);
         const rect = rectangles[rectIndex];
@@ -80,10 +80,10 @@ function generateArt() {
     rectangles.forEach(rect => {
         const div = document.createElement('div');
         div.style.position = 'absolute';
-        div.style.left = `${rect.x}px`;
-        div.style.top = `${rect.y}px`;
-        div.style.width = `${rect.width}px`;
-        div.style.height = `${rect.height}px`;
+        div.style.left = `${rect.x + 2}px`;  // Adjusted for border gap
+        div.style.top = `${rect.y + 2}px`;  // Adjusted for border gap
+        div.style.width = `${rect.width - 4}px`;  // Adjusted for border gap
+        div.style.height = `${rect.height - 4}px`;  // Adjusted for border gap
         div.style.backgroundColor = getRandomColor();
 
         painting.appendChild(div);
@@ -96,7 +96,7 @@ function generateArt() {
         if (rect.x + rect.width < canvasWidth) {
             const verticalLine = document.createElement('div');
             verticalLine.style.position = 'absolute';
-            verticalLine.style.left = `${rect.x + rect.width}px`;
+            verticalLine.style.left = `${rect.x + rect.width - 2}px`;  // Adjusted to align with color
             verticalLine.style.top = `${rect.y}px`;
             verticalLine.style.width = `${lineThickness}px`;
             verticalLine.style.height = `${rect.height}px`;
@@ -109,7 +109,7 @@ function generateArt() {
             const horizontalLine = document.createElement('div');
             horizontalLine.style.position = 'absolute';
             horizontalLine.style.left = `${rect.x}px`;
-            horizontalLine.style.top = `${rect.y + rect.height}px`;
+            horizontalLine.style.top = `${rect.y + rect.height - 2}px`;  // Adjusted to align with color
             horizontalLine.style.width = `${rect.width}px`;
             horizontalLine.style.height = `${lineThickness}px`;
             horizontalLine.style.backgroundColor = 'black';
