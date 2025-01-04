@@ -5,41 +5,91 @@ function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-function getRandomSize() {
-    return Math.floor(Math.random() * (painting.offsetWidth / 2)) + 50; // size between 50px and half of the painting's width
-}
-
-function getRandomPosition() {
-    const x = Math.floor(Math.random() * (painting.offsetWidth - 100)); // position within the canvas
-    const y = Math.floor(Math.random() * (painting.offsetHeight - 100));
-    return { x, y };
-}
-
-function createRectangle() {
-    const rect = document.createElement('div');
-    const size = getRandomSize();
-    const position = getRandomPosition();
-    const color = getRandomColor();
-
-    rect.style.position = 'absolute';
-    rect.style.width = `${size}px`;
-    rect.style.height = `${size}px`;
-    rect.style.left = `${position.x}px`;
-    rect.style.top = `${position.y}px`;
-    rect.style.backgroundColor = color;
-    rect.style.border = color === 'black' ? '2px solid black' : 'none'; // optional black border for emphasis
-
-    painting.appendChild(rect);
-}
-
 function generateArt() {
-    painting.innerHTML = ''; // Clear existing rectangles
-    const numRectangles = Math.floor(Math.random() * 16) + 5; // Random number of rectangles (between 5 and 20)
+    painting.innerHTML = ''; // Clear previous rectangles
 
-    for (let i = 0; i < numRectangles; i++) {
-        createRectangle();
+    const canvasWidth = painting.clientWidth;
+    const canvasHeight = painting.clientHeight;
+
+    // Create an initial rectangle that fills the entire canvas
+    const initialRectangle = {
+        x: 0,
+        y: 0,
+        width: canvasWidth,
+        height: canvasHeight,
+    };
+
+    // Array to hold rectangles
+    const rectangles = [initialRectangle];
+
+    // Split rectangles until we have a sufficient number
+    const minRectangles = 5;
+    const maxRectangles = 20;
+    const targetRectangles = Math.floor(Math.random() * (maxRectangles - minRectangles + 1)) + minRectangles;
+
+    while (rectangles.length < targetRectangles) {
+        // Choose a rectangle to split
+        const rectIndex = Math.floor(Math.random() * rectangles.length);
+        const rect = rectangles[rectIndex];
+
+        // Randomly decide whether to split vertically or horizontally
+        const splitVertically = Math.random() > 0.5;
+
+        if (splitVertically && rect.width > 100) {
+            // Split vertically
+            const splitPoint = Math.floor(Math.random() * (rect.width - 50)) + 50;
+
+            const rect1 = {
+                x: rect.x,
+                y: rect.y,
+                width: splitPoint,
+                height: rect.height,
+            };
+
+            const rect2 = {
+                x: rect.x + splitPoint,
+                y: rect.y,
+                width: rect.width - splitPoint,
+                height: rect.height,
+            };
+
+            rectangles.splice(rectIndex, 1, rect1, rect2);
+        } else if (!splitVertically && rect.height > 100) {
+            // Split horizontally
+            const splitPoint = Math.floor(Math.random() * (rect.height - 50)) + 50;
+
+            const rect1 = {
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: splitPoint,
+            };
+
+            const rect2 = {
+                x: rect.x,
+                y: rect.y + splitPoint,
+                width: rect.width,
+                height: rect.height - splitPoint,
+            };
+
+            rectangles.splice(rectIndex, 1, rect1, rect2);
+        }
     }
+
+    // Create DOM elements for each rectangle
+    rectangles.forEach(rect => {
+        const div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = `${rect.x}px`;
+        div.style.top = `${rect.y}px`;
+        div.style.width = `${rect.width - 4}px`; // Adjust for border width
+        div.style.height = `${rect.height - 4}px`; // Adjust for border width
+        div.style.backgroundColor = getRandomColor();
+        div.style.border = '4px solid black';
+
+        painting.appendChild(div);
+    });
 }
 
-// Initial art generation
+// Generate the initial art
 generateArt();
