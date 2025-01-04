@@ -1,10 +1,7 @@
-const colors = ['red', 'blue', 'yellow', 'black'];
+const colors = ['red', 'blue', 'yellow', 'black', 'white'];
 const painting = document.getElementById('painting');
 
-function getRandomColor(includeWhite = false) {
-    if (includeWhite) {
-        return Math.random() > 0.6 ? 'white' : colors[Math.floor(Math.random() * colors.length)];
-    }
+function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -13,12 +10,6 @@ function generateArt() {
 
     const canvasWidth = painting.clientWidth;
     const canvasHeight = painting.clientHeight;
-    const totalArea = canvasWidth * canvasHeight;
-
-    // Calculate the area to allocate to white and colored rectangles
-    const whiteRatio = Math.random() * (0.8 - 0.6) + 0.6; // 60-80% for white
-    const whiteArea = totalArea * whiteRatio;
-    const coloredArea = totalArea - whiteArea;
 
     // Create an initial rectangle that fills the entire canvas
     const initialRectangle = {
@@ -26,28 +17,26 @@ function generateArt() {
         y: 0,
         width: canvasWidth,
         height: canvasHeight,
-        color: 'white',
     };
 
+    // Array to hold rectangles
     const rectangles = [initialRectangle];
-    let currentWhiteArea = totalArea; // Start with the whole canvas as white
-    let currentColoredArea = 0;
 
-    // Split rectangles until we reach the target number and area distribution
+    // Split rectangles until we have a sufficient number
     const minRectangles = 5;
     const maxRectangles = 20;
     const targetRectangles = Math.floor(Math.random() * (maxRectangles - minRectangles + 1)) + minRectangles;
 
-    while (rectangles.length < targetRectangles || currentColoredArea < coloredArea) {
+    while (rectangles.length < targetRectangles) {
+        // Choose a rectangle to split
         const rectIndex = Math.floor(Math.random() * rectangles.length);
         const rect = rectangles[rectIndex];
 
-        if (rect.width < 50 || rect.height < 50) continue; // Avoid splitting very small rectangles
-
-        // Randomly decide to split vertically or horizontally
+        // Randomly decide whether to split vertically or horizontally
         const splitVertically = Math.random() > 0.5;
 
         if (splitVertically && rect.width > 100) {
+            // Split vertically
             const splitPoint = Math.floor(Math.random() * (rect.width - 50)) + 50;
 
             const rect1 = {
@@ -55,7 +44,6 @@ function generateArt() {
                 y: rect.y,
                 width: splitPoint,
                 height: rect.height,
-                color: rect.color,
             };
 
             const rect2 = {
@@ -63,11 +51,11 @@ function generateArt() {
                 y: rect.y,
                 width: rect.width - splitPoint,
                 height: rect.height,
-                color: rect.color,
             };
 
             rectangles.splice(rectIndex, 1, rect1, rect2);
         } else if (!splitVertically && rect.height > 100) {
+            // Split horizontally
             const splitPoint = Math.floor(Math.random() * (rect.height - 50)) + 50;
 
             const rect1 = {
@@ -75,7 +63,6 @@ function generateArt() {
                 y: rect.y,
                 width: rect.width,
                 height: splitPoint,
-                color: rect.color,
             };
 
             const rect2 = {
@@ -83,38 +70,27 @@ function generateArt() {
                 y: rect.y + splitPoint,
                 width: rect.width,
                 height: rect.height - splitPoint,
-                color: rect.color,
             };
 
             rectangles.splice(rectIndex, 1, rect1, rect2);
         }
-
-        // Adjust colors to maintain the white-to-colored ratio
-        const newRect = rectangles[rectangles.length - 1]; // The most recent split
-        const newArea = newRect.width * newRect.height;
-
-        if (Math.random() > whiteRatio && currentColoredArea < coloredArea) {
-            newRect.color = getRandomColor();
-            currentColoredArea += newArea;
-            currentWhiteArea -= newArea;
-        }
     }
 
-    // Draw rectangles
-    const lineThickness = 4; // Border thickness
+    // Draw the rectangles
     rectangles.forEach(rect => {
         const div = document.createElement('div');
         div.style.position = 'absolute';
         div.style.left = `${rect.x}px`;
         div.style.top = `${rect.y}px`;
-        div.style.width = `${rect.width - lineThickness}px`;
-        div.style.height = `${rect.height - lineThickness}px`;
-        div.style.backgroundColor = rect.color;
+        div.style.width = `${rect.width}px`;
+        div.style.height = `${rect.height}px`;
+        div.style.backgroundColor = getRandomColor();
 
         painting.appendChild(div);
     });
 
-    // Add borders
+    // Draw the borders
+    const lineThickness = 4; // Border thickness
     rectangles.forEach(rect => {
         // Vertical line (right edge)
         if (rect.x + rect.width < canvasWidth) {
