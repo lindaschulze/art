@@ -6,7 +6,7 @@ function getRandomColor() {
 }
 
 function generateArt() {
-    painting.innerHTML = ''; // Clear previous rectangles
+    painting.innerHTML = ''; // Clear previous painting
 
     const canvasWidth = painting.clientWidth;
     const canvasHeight = painting.clientHeight;
@@ -76,24 +76,45 @@ function generateArt() {
         }
     }
 
-    // Create DOM elements for each rectangle
-    const borderWidth = 4; // Border width
+    // Draw the rectangles
     rectangles.forEach(rect => {
         const div = document.createElement('div');
         div.style.position = 'absolute';
-        div.style.left = `${rect.x + borderWidth / 2}px`; // Adjust for shared border
-        div.style.top = `${rect.y + borderWidth / 2}px`;
-        div.style.width = `${rect.width - borderWidth}px`;
-        div.style.height = `${rect.height - borderWidth}px`;
+        div.style.left = `${rect.x}px`;
+        div.style.top = `${rect.y}px`;
+        div.style.width = `${rect.width}px`;
+        div.style.height = `${rect.height}px`;
         div.style.backgroundColor = getRandomColor();
 
-        // Add borders to edges only where necessary
-        div.style.borderTop = rect.y === 0 ? `${borderWidth}px solid black` : 'none';
-        div.style.borderLeft = rect.x === 0 ? `${borderWidth}px solid black` : 'none';
-        div.style.borderRight = `${borderWidth}px solid black`;
-        div.style.borderBottom = `${borderWidth}px solid black`;
-
         painting.appendChild(div);
+    });
+
+    // Draw the borders
+    const lineThickness = 4; // Border thickness
+    rectangles.forEach(rect => {
+        // Vertical line (right edge)
+        if (rect.x + rect.width < canvasWidth) {
+            const verticalLine = document.createElement('div');
+            verticalLine.style.position = 'absolute';
+            verticalLine.style.left = `${rect.x + rect.width}px`;
+            verticalLine.style.top = `${rect.y}px`;
+            verticalLine.style.width = `${lineThickness}px`;
+            verticalLine.style.height = `${rect.height}px`;
+            verticalLine.style.backgroundColor = 'black';
+            painting.appendChild(verticalLine);
+        }
+
+        // Horizontal line (bottom edge)
+        if (rect.y + rect.height < canvasHeight) {
+            const horizontalLine = document.createElement('div');
+            horizontalLine.style.position = 'absolute';
+            horizontalLine.style.left = `${rect.x}px`;
+            horizontalLine.style.top = `${rect.y + rect.height}px`;
+            horizontalLine.style.width = `${rect.width}px`;
+            horizontalLine.style.height = `${lineThickness}px`;
+            horizontalLine.style.backgroundColor = 'black';
+            painting.appendChild(horizontalLine);
+        }
     });
 }
 
