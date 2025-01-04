@@ -1,4 +1,4 @@
-const colors = ['red', 'blue', 'yellow', 'black', 'white'];
+const colors = ['red', 'blue', 'yellow', 'black'];
 const painting = document.getElementById('painting');
 
 function getRandomColor() {
@@ -10,6 +10,7 @@ function generateArt() {
 
     const canvasWidth = painting.clientWidth;
     const canvasHeight = painting.clientHeight;
+    const totalArea = canvasWidth * canvasHeight;
 
     // Create an initial rectangle that fills the entire canvas
     const initialRectangle = {
@@ -76,15 +77,32 @@ function generateArt() {
         }
     }
 
+    // Calculate the total area of white space (60-80% of the total area)
+    const whiteAreaMin = totalArea * 0.6;
+    const whiteAreaMax = totalArea * 0.8;
+    let whiteAreaCovered = 0;
+
     // Draw the rectangles
     rectangles.forEach(rect => {
+        // Randomly decide whether to make this rectangle white or a colored one
+        const isWhite = Math.random() < 0.5 && whiteAreaCovered < whiteAreaMax;
+
+        if (isWhite) {
+            // If it's white, increase the white area covered
+            whiteAreaCovered += rect.width * rect.height;
+            if (whiteAreaCovered > whiteAreaMax) {
+                // If white area exceeds the maximum, switch remaining rectangles to colored
+                whiteAreaCovered = whiteAreaMax;
+            }
+        }
+
         const div = document.createElement('div');
         div.style.position = 'absolute';
         div.style.left = `${rect.x + 2}px`;  // Adjusted for border gap
         div.style.top = `${rect.y + 2}px`;  // Adjusted for border gap
         div.style.width = `${rect.width - 4}px`;  // Adjusted for border gap
         div.style.height = `${rect.height - 4}px`;  // Adjusted for border gap
-        div.style.backgroundColor = getRandomColor();
+        div.style.backgroundColor = isWhite ? 'white' : getRandomColor(); // Assign color or white
 
         painting.appendChild(div);
     });
@@ -92,6 +110,7 @@ function generateArt() {
     // Draw the borders
     const lineThickness = 4; // Border thickness
     rectangles.forEach(rect => {
+        // Only draw borders where necessary (not on the outermost edges)
         // Vertical line (right edge)
         if (rect.x + rect.width < canvasWidth) {
             const verticalLine = document.createElement('div');
@@ -116,6 +135,17 @@ function generateArt() {
             painting.appendChild(horizontalLine);
         }
     });
+
+    // Draw outermost border around the entire canvas
+    const outerBorderThickness = 4; // Border thickness for outer edge
+    const outerBorder = document.createElement('div');
+    outerBorder.style.position = 'absolute';
+    outerBorder.style.left = '0px';
+    outerBorder.style.top = '0px';
+    outerBorder.style.width = `${canvasWidth}px`;
+    outerBorder.style.height = `${canvasHeight}px`;
+    outerBorder.style.border = `${outerBorderThickness}px solid black`;
+    painting.appendChild(outerBorder);
 }
 
 // Generate the initial art
