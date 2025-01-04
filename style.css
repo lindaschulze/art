@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+#art {
+  display: grid;
+  width: 80vmin;
+  height: 80vmin;
+  border: 5px solid black;
+}
