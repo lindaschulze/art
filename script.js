@@ -77,15 +77,21 @@ function generateArt() {
     }
 
     // Create DOM elements for each rectangle
+    const borderWidth = 4; // Border width
     rectangles.forEach(rect => {
         const div = document.createElement('div');
         div.style.position = 'absolute';
-        div.style.left = `${rect.x}px`;
-        div.style.top = `${rect.y}px`;
-        div.style.width = `${rect.width - 4}px`; // Adjust for border width
-        div.style.height = `${rect.height - 4}px`; // Adjust for border width
+        div.style.left = `${rect.x + borderWidth / 2}px`; // Adjust for shared border
+        div.style.top = `${rect.y + borderWidth / 2}px`;
+        div.style.width = `${rect.width - borderWidth}px`;
+        div.style.height = `${rect.height - borderWidth}px`;
         div.style.backgroundColor = getRandomColor();
-        div.style.border = '4px solid black';
+
+        // Add borders to edges only where necessary
+        div.style.borderTop = rect.y === 0 ? `${borderWidth}px solid black` : 'none';
+        div.style.borderLeft = rect.x === 0 ? `${borderWidth}px solid black` : 'none';
+        div.style.borderRight = `${borderWidth}px solid black`;
+        div.style.borderBottom = `${borderWidth}px solid black`;
 
         painting.appendChild(div);
     });
